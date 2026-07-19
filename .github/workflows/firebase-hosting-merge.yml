@@ -8,9 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ESPRSA_5180A }}'
-          channelId: live
-          projectId: esprsa-5180a
+      - name: Write service account key to file
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ESPRSA_5180A }}' > $HOME/gcp-key.json
+      - name: Deploy to Firebase Hosting
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /home/runner/gcp-key.json
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only hosting --project esprsa-5180a
